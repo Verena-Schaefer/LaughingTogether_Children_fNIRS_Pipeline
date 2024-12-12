@@ -19,7 +19,6 @@ cfg = [];
 cfg.overwrite = 0; %set to 1 if you want to overwrite all data (converted data will not be overwritten, all other steps will)
 cfg.groups = {'Lachen','Kontrolle'}; %names of the groups to be analyzed. Should correspond to subfolder names inside the raw data folder below
 cfg.segments = {'tangram', 'laughter', 'interaction'}; %segments of the experiment to be analyzed. Options: tangram, laughter, interaction
-cfg.fs = 7.8; %sampling rate of the data
 
 
 % --------------------------------------------------------------------

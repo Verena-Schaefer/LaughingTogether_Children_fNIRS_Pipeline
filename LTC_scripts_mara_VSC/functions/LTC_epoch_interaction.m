@@ -19,30 +19,23 @@ function data_out = LTC_epoch_interaction(data_in, fs)
     fprintf('time stamp interaction ends');
     evtInteractionEnd  = find(data_in.s(:, 7) > 0)
 
-    if size(evtInteraction,1)~=1 | size(evtInteractionEnd,1)~=1
-        fprintf('Trial number is different than expected!\n');
-        weirdtrials=1;
-    else
-        fprintf('Trial number is correct!\n');
-        weirdtrials=0;
-    end
-
+    if size(evtInteraction,1)==1 && size(evtInteractionEnd,1)==1
     %cut out interaction data
 
     % first calculate if there are enough samples to sum
     % up to 5 minutes. Also check that this part is not longer than 8
     % minutes, since this could indicate that something went wrong
-
-    if weirdtrials == 0
         if evtInteractionEnd - evtInteraction > (5*60*fs) && evtInteractionEnd - evtInteraction < (8*60*fs)
             Starts = evtInteraction + round(60*fs); %first sampling point of the part to analyze
             Ends = Starts + round(3*60*fs); %last sampling point of the part to analyze
-            data_out.y{1} = data_in.y(Starts:Ends,:);
-            data_out.s{1} = data_in.s(Starts:Ends,:);
-            data_out.t{1} = data_in.t(Starts:Ends,:);
+            data_out.y = data_in.y(Starts:Ends,:);
+            data_out.s = data_in.s(Starts:Ends,:);
+            data_out.t = data_in.t(Starts:Ends,:);
             data_out.SD = data_in.SD;
         else
             fprintf('Interaction duration is different than expected!\n');
         end
+    else
+        fprintf('Trial number is different than expected!\n');
     end
 end

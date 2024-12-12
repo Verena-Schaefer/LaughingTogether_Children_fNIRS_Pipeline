@@ -53,50 +53,55 @@ function cfg = LTC_segment(cfg)
                     cfg.problems = [cfg.problems, problem];
                     continue
                 end
-                fprintf('\nSegmenting data.\n Processing segment ')
-                fprintf(cfg.currentSegment)
-                fprintf('\n');
-        end
+            fprintf('\nSegmenting data.\n Processing segment ')
+            fprintf(cfg.currentSegment)
+            fprintf('\n');
         
-        if cfg.currentSegment == 'tangram'
-            try
-                data_out = LTC_epoch_tangram(data_in, cfg.fs);
-            catch
-                error = 1;
-            end
-        elseif cfg.currentSegment == 'laughter'
-            try
-                data_out = LTC_epoch_laughter(data_in);
-            catch
-                error = 1;
-            end
-        elseif cfg.currentSegment == 'interaction'
-            try
-                data_out = LTC_epoch_interaction(data_in, cfg.fs);
-            catch
-                error = 1;
-            end
-        end
+            %calculate sampling rate and sampling period
+            ts = data_in.t(2)-data_in.t(1);
+            fs = 1/ts;
 
-        %save cut data
-        fprintf('The segmented data of participant ')
-        fprintf(fileName)
-        fprintf(' will be saved in');
-        fprintf('%s ...\n', des_dir);
-        try
-            save(des_dir, 'data_out');
-            fprintf('Data stored!\n\n');
-            clear data_out
-        catch        
-            fprintf('<strong>%s epoching did not work</strong>\n', cfg.currentSegment);
-            fprintf('check %s trials of participant %s', cfg.currentSegment, cfg.currentPair)
-            problem = {sprintf('error in %s epoching', cfg.currentSegment)};
-            cfg.problems = [cfg.problems, problem];
-        end
-    
-    end    
-        
+            if cfg.currentSegment == 'tangram'
+                try
+                    data_out = LTC_epoch_tangram(data_in, fs);
+                catch
+                    error = 1;
+                end
+            elseif cfg.currentSegment == 'laughter'
+                try
+                    data_out = LTC_epoch_laughter(data_in);
+                catch
+                    error = 1;
+                end
+            elseif cfg.currentSegment == 'interaction'
+                try
+                    data_out = LTC_epoch_interaction(data_in, fs);
+                catch
+                    error = 1;
+                end
+            end
+
+            %save cut data
+            fprintf('The segmented data of participant ')
+            fprintf(fileName)
+            fprintf(' will be saved in');
+            fprintf('%s ...\n', des_dir);
+            try
+                save(des_dir, 'data_out');
+                fprintf('Data stored!\n\n');
+                clear data_out
+            catch
+                error = 1;
+            end
+            
+            if error == 1
+                fprintf('<strong>%s epoching did not work</strong>\n', cfg.currentSegment);
+                fprintf('check %s trials of participant %s', cfg.currentSegment, cfg.currentPair)
+                problem = {sprintf('error in %s epoching', cfg.currentSegment)};
+                cfg.problems = [cfg.problems, problem];
+            end
+        end    
+    end
     cfg.srcDir = cfg.desDir;
     cfg.steps = [cfg.steps, {'segmentation'}];
-    
 end

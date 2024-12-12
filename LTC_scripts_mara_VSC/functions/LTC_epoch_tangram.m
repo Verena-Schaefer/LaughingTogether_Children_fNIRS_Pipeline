@@ -7,11 +7,16 @@ function data_out = LTC_epoch_tangram(data_in,fs)
     
     %fs: sampling frequency in Hz
     
-    %Output: structure with the same format as data_in, but containing only data corresponding to the time period of interest
+    %Output: structure with the same format as data_in, but containing only data
+    %corresponding to the time period of interest
     
     %author: Carolina Pletti (carolina.pletti@gmail.com).
 	
-	%laughter video start trigger: 3; laughter video end trigger: 4. There are two laughter videos.
+	%tangram alone start trigger: 1; tangram together trigger: 2.
+    %rangram rest trigger: 3: There are two trials each for alone and
+    %together, and three rests in between all trials. The first trial is
+    %an "alone" trials and the last trial is a "together" trial. Data are
+    %cut from the first "alone" trial to the end of the last "together" trial
     
     fprintf('time stamp tangram alone');
     evtAlone  = find(data_in.s(:, 1) > 0)
@@ -20,32 +25,13 @@ function data_out = LTC_epoch_tangram(data_in,fs)
     fprintf('time stamp tangram rest');
     evtRest  = find(data_in.s(:, 3) > 0)
 
-    if size(evtAlone,1)~=2 | size(evtTogether,1)~=2 | size(evtRest,1) ~=3
-        fprintf('Trial number is different than expected!\n');
-        weirdtrials=1;
-    else
-        fprintf('Trial number is correct!\n');
-        weirdtrials=0;
-    end
-
-    %cut out tangram data
-
-    if weirdtrials == 0
-        for m = 1:length(evtAlone)
-            data_out.y.alone{m} = data_in.y(evtAlone(m):round(evtAlone(m)+120*fs),:); %cut data from trigger to two minutes after trigger
-            data_out.s.alone{m} = data_in.s(evtAlone(m):round(evtAlone(m)+120*fs),:);
-            data_out.t.alone{m} = data_in.t(evtAlone(m):round(evtAlone(m)+120*fs),:);
-        end
-        for m = 1:length(evtTogether)
-            data_out.y.together{m} = data_in.y(evtTogether(m):round(evtTogether(m)+120*fs),:); %cut data from trigger to two minutes after trigger
-            data_out.s.together{m} = data_in.s(evtTogether(m):round(evtTogether(m)+120*fs),:);
-            data_out.t.together{m} = data_in.t(evtTogether(m):round(evtTogether(m)+120*fs),:);
-        end
-        for m = 1:length(evtRest)
-            data_out.y.rest{m} = data_in.y(evtRest(m):round(evtRest(m)+80*fs),:); %cut data from trigger to 80 seconds after trigger
-            data_out.s.rest{m} = data_in.s(evtRest(m):round(evtRest(m)+120*fs),:);
-            data_out.t.rest{m} = data_in.t(evtRest(m):round(evtRest(m)+120*fs),:);
-        end
+    if size(evtAlone,1)==2 && size(evtTogether,1)==2 && size(evtRest,1) ==3
+        %cut out tangram data
+        data_out.y = data_in.y(evtAlone(1):round(evtTogether(2)+120*fs),:); %cut data from first alone trigger to two minutes after last together trigger
+        data_out.s = data_in.s(evtAlone(1):round(evtTogether(2)+120*fs),:);
+        data_out.t = data_in.t(evtAlone(1):round(evtTogether(2)+120*fs),:);
         data_out.SD = data_in.SD;
+    else
+        fprintf('Trial number is different than expected!\n');
     end
 end
