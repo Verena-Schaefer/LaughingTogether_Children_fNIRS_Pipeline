@@ -24,7 +24,7 @@ function cfg = LTC_config_paths(cfg, uni)
         project_folder = 'X:\hoehl\projects\LT\LT_adults\'; %change this!!
 
         %Homer2 is here:
-        toolbox_folder = 'Z:\Documents\'; %do I need this???
+        toolbox_folder = 'Z:\Documents\matlab_toolboxes\';
         
         %raw data folder is here:
         %add raw data folder!!!
@@ -34,7 +34,7 @@ function cfg = LTC_config_paths(cfg, uni)
         project_folder = '\\fs.univie.ac.at\plettic85\Documents\Projects\LaughingTogether_Children_fNIRS_Pipeline\';
 
         %Homer2 is here:
-        toolbox_folder = '\\fs.univie.ac.at\plettic85\Documents\';
+        toolbox_folder = '\\fs.univie.ac.at\plettic85\Documents\matlab_toolboxes\';
         
         %raw data folder is here:
         raw_folder = '\\share.univie.ac.at\A474\hoehl\projects\LT\LTC\NIRX\';
@@ -51,8 +51,10 @@ function cfg = LTC_config_paths(cfg, uni)
     
     addpath([data_prep_folder 'functions']); %add path with functions
     
-    % if we are calling this function from "LTC_main", 
-    % add Homer2 to the path using its own function
+    addpath([toolbox_folder 'spm_fnirs']); %add spm_fnirs toolbox to the path
+    
+    %if we are calling this function from "LTC_main", 
+    %add Homer2 to the path using its own function
 %     if ~isfield(cfg, 'permnum') %the field "permnum" shouldn't exist if we are calling this from "LTC_main"
 %         cd ([toolbox_folder 'homer2'])
 %         setpaths
