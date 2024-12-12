@@ -111,7 +111,7 @@ for g = cfg.groups
             cfg_part = LTC_segment(cfg_part);
             
             %preprocess data
-            %cfg_part = LT_preprocess(cfg_part);
+            cfg_part = LTC_preprocess(cfg_part);
             
             %wavelet transform coherence
             %cfg_part = LT_WTC(cfg_part);
