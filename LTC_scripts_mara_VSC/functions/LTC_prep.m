@@ -1,4 +1,4 @@
-function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
+function [hbo, hbr, badChannels] = LTC_prep(t, y, SD)
     
 	%this function performs the following preprocessing steps:
     %1: convert the wavelength data to optical density
@@ -14,11 +14,10 @@ function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
 	%SD: file containing source and detectors configuration
     
     %Output:
-	%hbo: preprocessed oxygenated hemoglobin time series
-	%hbr: preprocessed deoxygenated hemoglobin time series
-	%badChannels: vector of channels to be excluded from further analyses
-	%SCIList: list of scalp coupling index by channel
-	%fs: sampling frequency
+    %data_cleaned: cell containing
+    	%hbo: preprocessed oxygenated hemoglobin time series
+        %hbr: preprocessed deoxygenated hemoglobin time series
+        %badChannels: vector of channels to be excluded from further analyses
     
     %author: Carolina Pletti (carolina.pletti@gmail.com). Adapted from a script by Trinh Nguyen
 	
@@ -40,22 +39,32 @@ function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
 
     %apply MARA algorythm to correct for motion artifacts
     mara_cfg = []; % prepare cfg structure containing settings for MARA
-    %mara_cfg.chs = which channels???
     mara_cfg.L = 1; %Length of the moving-window to calculate the moving standard deviation (MSD)
     %1 (second) is the default value according to Nguyen et al., 2021
-    
-    mask = ones(1, 16); 
+    mask = ones(1, 32); 
     ch_roi = find(mask ~= 0); 
-    mara_cfg.chs = ch_roi; %index of channels to be analyzed - why 16???
+    mara_cfg.chs = ch_roi; %index of channels to be analyzed
     mara_cfg.th = 3; %Threshold for artifact detection. 3 is the default value according to Nguyen et al., 2021
     mara_cfg.alpha = 5; %Parameter that defined how much high-frequency information should 
             %           be preserved by the removal of the artifact (i.e., it corresponds 
             %           to the length of the LOESS smoothing window) -
-            %           5 is the default value according to Nguyen et al., 2021
+            %           5 is the default value according to Nguyen et al.,
+            %           2021
      mara_cfg.fs = fs;       
      
     dod_prep = LTC_spmfnirs_MARA(dod, mara_cfg);
 
+    %plot effect of MARA
+    figure(1)
+    set(gcf, 'WindowState', 'maximized');
+
+    for j = 1:16
+        subplot(4,4,j)
+        ch = [dod(:,j), dod_prep(:,j)];
+        plot(ch)
+    end
+    legend(',raw_OD','MARA_OD')
+    
     % bandpass filtering
     lpf = 0.5; % in Hz
     hpf = 0.01; % in Hz
@@ -82,10 +91,10 @@ function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
     figure(4)
     for i = 1:16
         %first wavelength
-        x1 = d(:,i);
+        x1 = y(:,i);
         y1 = bandpass(x1,[1/2 1+1/2],fs);
         %second wavelength
-        x2 = d(:,i+16);
+        x2 = y(:,i+16);
         y2 = bandpass(x2,[0.5 1.5], fs);
         %cut the first and last 200 time points to leave out artifacts. Then normalize.
         y1 = y1(200:length(y1)-200);
@@ -110,7 +119,7 @@ function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
 	
 	%plot the continuous wavelet transform  power spectrum for each channel in order to visually check signal quality
 	%convert unfiltered signal from optical density to concentration for plotting purposes.
-    ppf = [6 6]; % partial pathlength factors for each wavelength.
+    ppf = [5.5067 4.6881]; % partial pathlength factors for each wavelength.
     dod_check = hmrOD2Conc(dod_prep, SD, ppf);
     hbo = squeeze(dod_check(:,1,:));
     figure(5)
@@ -146,14 +155,14 @@ function [hbo, hbr, badChannels, SCIList, fs]= LTC_prep(t, y, SD)
     set(gcf,'units','normalized','outerposition',[0 0 1 1]) % maximize figure
 
 	%open box to manually mark bad channels
-    badChannels = channelCheckbox();
+    bad = find(SCIList.Bad ~= 0);
+    badChannels = LTC_channelCheckbox(bad);
 
     %convert changes in OD (filtered signal) to changes in concentrations (HbO, HbR, and HbT)
-    ppf = [6 6]; % partial pathlength factors for each wavelength.
     dc = hmrOD2Conc(dod_corr_filt, SD, ppf);
 
     % extract hbo and hbr
     hbo = squeeze(dc(:,1,:));
     hbr = squeeze(dc(:,2,:));
-
+    
 end

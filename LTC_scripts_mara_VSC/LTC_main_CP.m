@@ -123,12 +123,11 @@ for g = cfg.groups
         %that were ran
         try
             out_path = strcat(cfg.srcDir, cfg_part.currentPair, '.mat');
-            fprintf(strcat('The cfg file of pair ', string(cfg_part.currentPair),' will be saved in/n'));
-            fprintf('%s ...\n', out_path);
+            fprintf('The cfg file of pair %s will be saved in/n %s /n', cfg_part.currentPair, out_path);
             save(out_path, 'cfg_part');
             fprintf('Data stored!\n\n');
         catch
-            fprintf('Couldnt save data ');
+            fprintf('Couldnt save data \n');
         end
         
     end

@@ -12,8 +12,7 @@ function data_out = LTC_epoch_laughter(data_in)
     %author: Carolina Pletti (carolina.pletti@gmail.com).
 	
 	%laughter video start trigger: 4; laughter video end trigger: 5.
-    %There are two laughter videos. Data are cut from the first video to
-    %the end of the last video
+    %There are two laughter videos.
     
     fprintf('time stamp laughter video beginnings');
     evtLaughter  = find(data_in.s(:, 4) > 0)
@@ -28,11 +27,12 @@ function data_out = LTC_epoch_laughter(data_in)
                 fprintf('Too short trial!\n');
             elseif evtLaughterEnd(m)-evtLaughter(m) > 2390 %left "spielraum" in case delays in triggers
                 fprintf('Too long trial!\n');
+            else
+                data_out.y{m} = data_in.y(evtLaughter(m):evtLaughterEnd(m),:);
+                data_out.s{m} = data_in.s(evtLaughter(m):evtLaughterEnd(m),:);
+                data_out.t{m} = data_in.t(evtLaughter(m):evtLaughterEnd(m),:);
             end
         end
-        data_out.y = data_in.y(evtLaughter(1):evtLaughterEnd(2),:);
-        data_out.s = data_in.s(evtLaughter(1):evtLaughterEnd(2),:);
-        data_out.t = data_in.t(evtLaughter(1):evtLaughterEnd(2),:);
         data_out.SD = data_in.SD;
     else
         fprintf('Trial number is different than expected!\n');

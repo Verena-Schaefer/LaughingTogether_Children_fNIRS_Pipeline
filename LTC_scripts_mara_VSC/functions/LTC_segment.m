@@ -61,19 +61,19 @@ function cfg = LTC_segment(cfg)
             ts = data_in.t(2)-data_in.t(1);
             fs = 1/ts;
 
-            if cfg.currentSegment == 'tangram'
+            if contains(cfg.currentSegment,'tangram');
                 try
                     data_out = LTC_epoch_tangram(data_in, fs);
                 catch
                     error = 1;
                 end
-            elseif cfg.currentSegment == 'laughter'
+            elseif contains(cfg.currentSegment,'laughter')
                 try
                     data_out = LTC_epoch_laughter(data_in);
                 catch
                     error = 1;
                 end
-            elseif cfg.currentSegment == 'interaction'
+            elseif contains(cfg.currentSegment,'interaction')
                 try
                     data_out = LTC_epoch_interaction(data_in, fs);
                 catch

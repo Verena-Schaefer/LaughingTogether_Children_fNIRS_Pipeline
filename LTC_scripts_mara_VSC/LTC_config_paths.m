@@ -21,13 +21,13 @@ function cfg = LTC_config_paths(cfg, uni)
     if uni == 1
 
         %project folder is here:
-        project_folder = 'X:\hoehl\projects\LT\LT_adults\'; %change this!!
+        project_folder = 'Z:\Documents\Projects\LaughingTogether_Children_fNIRS_Pipeline\';
 
         %Homer2 is here:
         toolbox_folder = 'Z:\Documents\matlab_toolboxes\';
         
         %raw data folder is here:
-        %add raw data folder!!!
+        raw_folder = 'X:\hoehl\projects\LT\LTC\NIRX\';
 
     else
         %project folder is here:
