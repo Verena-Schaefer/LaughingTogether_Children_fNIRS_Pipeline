@@ -1,37 +1,38 @@
-%%%%%%%%%%%%%%%%%% LTC Project - Main script %%%%%%%%%%%%%%%%%%%%%%%
-% this script takes raw fNIRS data in the NIRX specific format, converts them so they can be preprocessed using Homer2 and spmfnirs functions, extracts
-% segments of interest based on markers in the data, cleans and
-% preprocesses the data, and calculates synchrony between pairs of participants
-% using wavelet transform coherence
+% This script processes raw fNIRS data in the NIRX specific format. 
+% It performs the following steps:
+% 1. Converts raw data for compatibility with Homer2 and SPM functions.
+% 2. Segments data based on experimental markers.
+% 3. Cleans and preprocesses the data.
+% 4. Calculates synchrony between participant pairs using wavelet transform coherence.
+%
+% Note: The function "LTC_config_paths" must be in the MATLAB current folder for this script to run properly.
+% Before using: check that the paths in the LTC_config_paths function match
+% your system setup!
+%
 
-%the function "LTC_config_paths" needs to be in the Matlab current folder for this script to run! 
+% Author: Carolina Pletti (carolina.pletti@gmail.com)
 
-%author: Carolina Pletti (carolina.pletti@gmail.com)
-
-clear all
+clear all  % Clear all variables from the workspace
 
 %---------------------------------------------------------
 
-% create empty structure that will contain all necessary parameters for
-% preprocessing
-
+% Initialize an empty configuration structure for preprocessing settings.
 cfg = [];
-cfg.overwrite = 0; %set to 1 if you want to overwrite all data (converted data will not be overwritten, all other steps will)
-cfg.groups = {'Lachen','Kontrolle'}; %names of the groups to be analyzed. Should correspond to subfolder names inside the raw data folder below
-cfg.segments = {'tangram', 'laughter', 'interaction'}; %segments of the experiment to be analyzed. Options: tangram, laughter, interaction
-
+cfg.overwrite = 0; % Set to 1 to overwrite all data except converted data.
+cfg.groups = {'Lachen','Kontrolle'}; % Names of participant groups; should match subfolder names in the raw data directory.
+cfg.segments = {'tangram', 'laughter', 'interaction'}; % Experiment segments to be analyzed.
 
 % --------------------------------------------------------------------
-%set all paths for loading and saving data, add folder with functions and Homer2 to the path. Change paths in the config_paths
-%function and following part of the script based on necessity 
+%set all paths for loading and saving data, add folder with functions and Homer2 to the path.
+%Modify the "LTC_config_paths" function as needed to match your system setup 
 
 sel = false;
 
 while sel == false
-    fprintf('\nPlease select one option:\n');
+    fprintf('\nPlease select the workspace environment:\n');
     fprintf('[1] - Carolina''s workspace at the uni\n');
     fprintf('[2] - Carolina''s workspace at home\n');
-    fprintf('[3] - None of the above\n');
+    fprintf('[3] - None of the above (manual setup required)\n');
 
     x = input('Option: ');
 
@@ -44,7 +45,7 @@ while sel == false
             cfg = LTC_config_paths(cfg, 0)
         case 3
             sel = true;
-            fprintf('please change this script and the config_path function so that the paths match with where you store data, toolboxes and scripts!');
+            fprintf('Please modify this script and the LTC_config_paths function to match your system setup.');
         return;
         otherwise
             cprintf([1,0.5,0], 'Wrong input!\n');
@@ -52,12 +53,14 @@ while sel == false
     end
 end
 
+% --------------------------------------------------------------------
+% Choose coherence calculation method: by channel or by region of interest (ROI).
 sel_ROI = false;
 
 while sel_ROI == false
-    fprintf('\nPlease select one option:\n');
-    fprintf('[1] - Calculate coherence by channel\n');
-    fprintf('[2] - Calculate coherence by ROI\n');
+    fprintf('\nPlease coherence calculation method:\n');
+    fprintf('[1] - Coherence by channel\n');
+    fprintf('[2] - Coherence by ROI\n');
     fprintf('[3] - Quit\n');
 
     x = input('Option: ');
@@ -77,53 +80,52 @@ while sel_ROI == false
     end
 end
 
-
-%set the loop that run the functions through all data
+% --------------------------------------------------------------------
+% Loop through groups and process each participant's data.
 for g = cfg.groups
     cfg.currentGroup = g{:};
     cfg.currentPrefix = cfg.currentGroup(1);
     cfg.rawGrDir = strcat(cfg.rawDir,cfg.currentGroup,'\');
     cfg.srcDir = strcat(cfg.desDir, cfg.currentGroup, '\');
 
-    %identify all file in the group subdirectory
+    % Identify all participant pairs in the current group folder.
     sourceList    = dir([cfg.rawGrDir, '*_*']);
     sourceList    = struct2cell(sourceList);
     sourceList    = sourceList(1,:);
     numOfSources  = length(sourceList);
     
     for i = 1:numOfSources
-        %retrieve unmodified cfg info
+        % Create a copy of the cfg structure for each participant pair.
         cfg_part = cfg;
         cfg_part.currentPair = sourceList{i};
-        cfg_part.problems = {};
-        cfg_part.steps = {};
+        cfg_part.problems = {}; % Initialize empty error log.
+        cfg_part.steps = {}; % Initialize empty step log.
         
-        %convert data
-        
+        % Convert NIRX data to SPM format.
         cfg_part = LTC_NIRxtoSPM(cfg_part);
-
         
-        %now loop through for every relevant segment of the task (laughter, interaction)
+        %now loop through every relevant segment of the task (tangram, laughter, interaction)
         for s = cfg_part.segments
             cfg_part.currentSegment = s{:};
             
-            %segment data
+            %segment data based on experimental markers.
             cfg_part = LTC_segment(cfg_part);
             
-            %preprocess data
+            %preprocess data (filtering, motion correction, etc.).
             cfg_part = LTC_preprocess(cfg_part);
             
             %wavelet transform coherence
-            %cfg_part = LT_WTC(cfg_part);
+            cfg_part = LTC_WTC(cfg_part);
             
+            % Restore original source directory path.
             cfg_part.srcDir = cfg.srcDir;
         end 
         
         %save participant's cfg file, which contains a log of all the steps
-        %that were ran
+        %that were ran and the errors
         try
             out_path = strcat(cfg.srcDir, cfg_part.currentPair, '.mat');
-            fprintf('The cfg file of pair %s will be saved in/n %s /n', cfg_part.currentPair, out_path);
+            fprintf('The cfg file of pair %s will be saved in \n %s \n', cfg_part.currentPair, out_path);
             save(out_path, 'cfg_part');
             fprintf('Data stored!\n\n');
         catch
