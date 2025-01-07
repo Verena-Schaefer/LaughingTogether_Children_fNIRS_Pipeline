@@ -43,12 +43,12 @@ function cfg = LTC_segment(cfg)
 
         des_dir = strcat(cfg.desDir, fileName, '.mat');
         
-        %check if segmented files already exist and if file to segment can
-        %be opened
+        %check if segmented files already exist
         if ~exist(des_dir, 'file')
                 try
                     data_in = load(file_path);
                 catch
+                    % if file to segment can't be opened
                     problem = {'file to segment can''t be opened'};
                     cfg.problems = [cfg.problems, problem];
                     continue
@@ -61,6 +61,7 @@ function cfg = LTC_segment(cfg)
             ts = data_in.t(2)-data_in.t(1);
             fs = 1/ts;
 
+            %based on tasks, apply segmenting function
             if contains(cfg.currentSegment,'tangram');
                 try
                     data_out = LTC_epoch_tangram(data_in, fs);
@@ -81,7 +82,7 @@ function cfg = LTC_segment(cfg)
                 end
             end
 
-            %save cut data
+            %save segmented data
             fprintf('The segmented data of participant ')
             fprintf(fileName)
             fprintf(' will be saved in');

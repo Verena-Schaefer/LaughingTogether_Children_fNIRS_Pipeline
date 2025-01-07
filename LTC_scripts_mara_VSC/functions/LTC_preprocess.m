@@ -61,6 +61,7 @@ function cfg = LTC_preprocess(cfg)
                         try
                             [hbo, hbr, badChannels] = LTC_prep(data_out.(phases{pn}).t{tn}, data_out.(phases{pn}).y{tn}, data_out.SD);
                             data_prep.(phases{pn}).s{tn} = data_out.(phases{pn}).s{tn};
+                            data_prep.(phases{pn}).t{tn} = data_out.(phases{pn}).t{tn};
                             data_prep.(phases{pn}).hbo{tn} = hbo;
                             data_prep.(phases{pn}).hbr{tn} = hbr;
                             data_prep.(phases{pn}).badChannels{tn} = badChannels;
@@ -81,6 +82,7 @@ function cfg = LTC_preprocess(cfg)
                         try
                             [hbo, hbr, badChannels] = LTC_prep(data_out.t{tn}, data_out.y{tn}, data_out.SD);
                             data_prep.s{tn} = data_out.s{tn};
+                            data_prep.t{tn} = data_out.t{tn};
                             data_prep.hbo{tn} = hbo;
                             data_prep.hbr{tn} = hbr;
                             data_prep.badChannels{tn} = badChannels;
@@ -98,6 +100,7 @@ function cfg = LTC_preprocess(cfg)
                 try
                     [hbo, hbr, badChannels] = LTC_prep(data_out.t, data_out.y, data_out.SD);
                     data_prep.s = data_out.s;
+                    data_prep.t = data_out.t;
                     data_prep.hbo = hbo;
                     data_prep.hbr = hbr;
                     data_prep.badChannels = badChannels;
