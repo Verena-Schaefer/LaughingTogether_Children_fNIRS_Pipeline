@@ -1,0 +1,5 @@
+# Ignore the Data folder
+Data/
+
+# Ignore temporary files created my Matlab
+*.asv
