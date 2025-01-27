@@ -60,7 +60,7 @@ function cfg = LTC_config_paths(cfg, uni)
     
     %if we are calling this function from "LTC_main", 
     %add Homer2 to the path using its own function
-    if ~isfield(cfg, 'permnum') %the field "permnum" shouldn't exist if we are calling this from "LTC_main"
+    if ~isfield(cfg, 'permnum') && ~isfield(cfg, 'avg') %the field "permnum" and the field "avg" shouldn't exist if we are calling this from "LTC_main"
         cd ([toolbox_folder 'homer2'])
         setpaths
         cd(data_prep_folder)
