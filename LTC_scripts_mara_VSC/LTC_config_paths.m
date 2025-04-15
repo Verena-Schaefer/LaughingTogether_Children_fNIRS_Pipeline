@@ -3,7 +3,7 @@ function cfg = LTC_config_paths(cfg, uni)
     %%%%%%%%%%%%%%%%%% LTC Config Paths function %%%%%%%%%%%%%%%%%%%%%%%
     % This function sets the paths for the fNIRS analysis, including
     % raw data directories, toolbox paths, and output folders. It also
-    % adds required toolboxes (Homer2, spm_fnirs) to the MATLAB path.
+    % adds required toolboxes (Homer2) to the MATLAB path.
     %
     % BEFORE USING: CHECK THAT THE PATHS IN THIS FUNCTION MATCH YOUR SYSTEM
     % SETUP
@@ -56,7 +56,6 @@ function cfg = LTC_config_paths(cfg, uni)
     
     % Add necessary folders and toolboxes to MATLAB path.
     addpath([data_prep_folder 'functions']); %add path with functions    
-    addpath([toolbox_folder 'spm_fnirs']); %add spm_fnirs toolbox to the path
     
     %if we are calling this function from "LTC_main", 
     %add Homer2 to the path using its own function
