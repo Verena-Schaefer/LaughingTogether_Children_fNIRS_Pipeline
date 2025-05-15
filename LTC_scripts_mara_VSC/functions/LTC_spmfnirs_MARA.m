@@ -116,7 +116,7 @@ function [Y] = LTC_spmfnirs_MARA(x,cfg)
     for i = 1:nd 
         % Only apply MARA if the threshold is within the range of standard deviations.
         if th(indx_m(i)) < mstd_y(3, indx_m(i)) && th(indx_m(i)) > mstd_y(1, indx_m(i))
-            Y(:, indx_m(i)) = spm_fnirs_MARA(Y(:, indx_m(i)), cfg.fs, th(indx_m(i)), L(indx_m(i)) , alpha(indx_m(i)));
+            Y(:, indx_m(i)) = spm_fnirs_MARA_CP(Y(:, indx_m(i)), cfg.fs, th(indx_m(i)), L(indx_m(i)) , alpha(indx_m(i)));
         end
     end
 end
