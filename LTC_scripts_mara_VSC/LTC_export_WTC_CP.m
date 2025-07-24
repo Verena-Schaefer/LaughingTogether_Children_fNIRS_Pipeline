@@ -22,8 +22,9 @@ clear all
 
 cfg = [];
 cfg.groups = {'Lachen','Kontrolle'}; % Names of participant groups; should match subfolder names in the raw data directory.
-cfg.segments = {'interaction', 'laughter', 'tangram'}; % Experiment segments to be analyzed.
+cfg.segments = {'tangram', 'laughter', 'interaction'}; % Experiment segments to be analyzed.
 cfg.labels = {'IFGr', 'IFGl', 'TPJr', 'TPJl'}; %ROIs
+cfg.data = {'real', 'RPA'};
 
 %decide what you want the analysis to do
 sel_export = false;
@@ -106,9 +107,8 @@ cfg.dataDir = cfg.desDir;
 
 for s = cfg.segments
     cfg.currentSegment = s{:};
-    
     if contains(cfg.currentSegment, 'tangram')
-        cfg.fields = {'alone', 'together', 'rest'};
+        cfg.fields = {'alone', 'together'};
         phases = numel(cfg.fields);
         for i = 1:phases
             % Get the field name

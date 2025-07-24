@@ -6,23 +6,26 @@ function [coherences_all,coherences_avgTime,coherences_avgAll, time] = LTC_prep_
         t = data_sub1.t{:};
         hbo_2 = data_sub2.hbo{:};
         badChannels_2 = data_sub2.badChannels{:};
+        t_2 = data_sub2.t{:};
     else
         hbo_1 = data_sub1.hbo;
         badChannels_1 = data_sub1.badChannels;
         t = data_sub1.t;
         hbo_2 = data_sub2.hbo;
         badChannels_2 = data_sub2.badChannels;
+        t_2 = data_sub2.t;
     end
     
     
     
     %the time vectors for both participants should be identical.
     %check if that's the case
-    if ~isequal(data_sub2.t, data_sub1.t)
+    if length(t) ~= length(t_2)
         fprintf('the time vectors of the two participants don''t correspond!')
-        problem = {'time vectors don''t correspond'};
-        cfg.problems = [cfg.problems, problem];
-        return;
+        shortest_duration = min(length(t), length(t_2));
+        t = t(1:shortest_duration);
+        hbo_1 = hbo_1(1:shortest_duration, :);
+        hbo_2 = hbo_2(1:shortest_duration, :);
     end
     if ROI == 1
         %average all channels by ROI

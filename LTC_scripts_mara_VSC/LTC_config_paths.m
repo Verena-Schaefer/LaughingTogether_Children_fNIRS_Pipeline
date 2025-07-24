@@ -51,7 +51,8 @@ function cfg = LTC_config_paths(cfg, uni)
     
     % Set paths in the cfg structure.
     cfg.rawDir = raw_folder; % raw data folder
-    cfg.desDir = [project_folder 'Data\']; % destination folder
+    %cfg.desDir = [project_folder 'Data\']; % destination folder
+    cfg.desDir = '\\share.univie.ac.at\A474\hoehl\projects\LT\LTC\Analyses\fNIRS\Nina_analyses\Data\';
     cfg.SDFile = [raw_folder 'LT.SD']; % SD file
     
     % Add necessary folders and toolboxes to MATLAB path.
