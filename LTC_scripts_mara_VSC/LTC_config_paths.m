@@ -36,13 +36,10 @@ function cfg = LTC_config_paths(cfg, uni)
 
     else
         %project folder is here:
-        project_folder = '\\fs.univie.ac.at\plettic85\Documents\Projects\LaughingTogether_Children_fNIRS_Pipeline\';
 
         %Homer2 is here:
-        toolbox_folder = '\\fs.univie.ac.at\plettic85\Documents\matlab_toolboxes\';
         
         %raw data folder is here:
-        raw_folder = '\\share.univie.ac.at\A474\hoehl\projects\LT\LTC\NIRX\';
         
     end
 

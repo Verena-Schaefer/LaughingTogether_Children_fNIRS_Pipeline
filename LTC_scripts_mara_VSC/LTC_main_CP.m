@@ -31,7 +31,6 @@ sel = false;
 while sel == false
     fprintf('\nPlease select the workspace environment:\n');
     fprintf('[1] - Carolina''s workspace at the uni\n');
-    fprintf('[2] - Carolina''s workspace at home\n');
     fprintf('[3] - None of the above (manual setup required)\n');
 
     x = input('Option: ');
